@@ -4,7 +4,7 @@ module.exports.saveFriends = (userIds, callback) => {
 
 	let values = "(" + userIds.join(",") + ",1),"
 	values += "(" + userIds.reverse().join(",") + ",1)";
-	let sql = "INSERT IGNORE INTO friend(`user_id`, `friend_id`, `is_friend`) VALUES" + values;
+	let sql = "REPLACE INTO friend(`user_id`, `friend_id`, `is_friend`) VALUES" + values;
   
   db.query(sql, function (err, result) {
     if (err) throw err;
@@ -34,15 +34,37 @@ module.exports.findCommonFriends  = (emails, callback) => {
   });
 }
 
-module.exports.saveAndSubscribe = (userIds, callback) => {
+module.exports.replace = (userIds, column, callback) => {
 	let values = "(" + userIds.join(",") + ",1)"
-	let sql = "INSERT IGNORE INTO friend(`user_id`, `friend_id`, `is_subscribe`) VALUES" + values;
-  
+	let sql = "REPLACE INTO friend(`user_id`, `friend_id`, " + column  + ") VALUES" + values;
+  console.log(sql);
   db.query(sql, function (err, result) {
     if (err) throw err;
     callback(result);
   });
 };
+
+module.exports.subscribe = (userIds, column, callback) => {
+	let values = "(" + userIds.join(",") + ",1)"
+	let sql = "INSERT INTO friend(`user_id`, `friend_id`, " + column  + ") VALUES" + values;
+  sql += "ON DUPLICATE KEY UPDATE `is_subscribe`=1";
+  console.log(sql);
+  db.query(sql, function (err, result) {
+    if (err) throw err;
+    callback(result);
+  });
+};
+
+module.exports.retrieve = (email, callback) => {
+	sql = "SELECT email FROM user WHERE user_id IN (SELECT friend_id FROM friend JOIN user WHERE friend.user_id = user.user_id AND (is_friend = 1 OR is_subscribe = 1) AND (is_block <> 1 OR is_block IS NULL) AND ";
+	sql += "email = '" + email + "')";
+	console.log(sql);
+  db.query(sql, function (err, result) {
+    if (err) throw err;
+    callback(result);
+  });
+};
+
 
 
 
