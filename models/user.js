@@ -12,9 +12,9 @@ module.exports.saveUsers = (emails) => {
   });
 }
 
-module.exports.findUsersByEmails = (emails, callback) => {
-		let values = emails.join("','");
-    let sql = "SELECT * FROM user WHERE email IN ('" + values + "')";
+module.exports.findUsers = (key, values, callback) => {
+		values = values.join("','");
+    let sql = "SELECT * FROM user WHERE " +  key + " IN ('" + values + "')";
     db.query(sql, function (err, result) {
     	callback(result);
   })
