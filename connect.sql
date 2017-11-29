@@ -22,6 +22,7 @@
 
 # Dump of table friend
 # ------------------------------------------------------------
+CREATE DATABASE IF NOT EXISTS connect;
 
 DROP TABLE IF EXISTS `friend`;
 
