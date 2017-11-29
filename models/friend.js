@@ -34,5 +34,15 @@ module.exports.findCommonFriends  = (emails, callback) => {
   });
 }
 
+module.exports.saveAndSubscribe = (userIds, callback) => {
+	let values = "(" + userIds.join(",") + ",1)"
+	let sql = "INSERT IGNORE INTO friend(`user_id`, `friend_id`, `is_subscribe`) VALUES" + values;
+  
+  db.query(sql, function (err, result) {
+    if (err) throw err;
+    callback(result);
+  });
+};
+
 
 

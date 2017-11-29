@@ -6,6 +6,26 @@ const app = express()
 app.use(bodyParser.json());
 
 
+app.post('/users/subscribe', (req, res) => {
+	let user = req.body;
+	if (!user.requestor || !user.target) {
+		res.json({success: false, error : 'please provide emails'})
+	}
+	let requestorEmail = user.requestor;
+	let targetEmail = user.target;
+	emails = [requestorEmail, targetEmail];
+	User.saveUsers(emails);
+	User.findUsers('email', emails, (rows) => {
+		let users = {};
+		rows.forEach((row) => {
+			users[row.email] = row.user_id;
+		});
+
+		Friend.saveAndSubscribe([users[requestorEmail], users[targetEmail]], (result) => {
+			res.json({success: true});
+		});
+	});
+});
 
 app.post('/users/common', (req, res) => {
 	let user = req.body;
